@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>tensquare_parent52</artifactId>
+        <groupId>com.jh</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>tensquare_config</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-config-server</artifactId>
+        </dependency>
+        <!-- Spring Cloud Bus配置 -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-bus</artifactId>
+        </dependency>
+        <!--修改配置文件后，发送消息-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-stream-binder-rabbit</artifactId>
+        </dependency>
+    </dependencies>
+
+  <build>
+        <!--为当前工程起名称 -->
+        <finalName>tensquare_config</finalName>
+        <plugins>
+                 <!-- spring boot的maven插件 一个plugin代表一个插件-->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+             <!--  docker的maven插件，官网：https://github.com/spotify/docker‐maven‐plugin -->
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.31.0</version>
+                <configuration>
+                    <!--做成镜像后镜像的名称 -->
+                    <!--project.artifactId：tensquare_config-->
+                    <!--192.168.43.228:5000：私有库地址-->
+                    <imageName>192.168.217.316:5000/${project.artifactId}:${project.parent.version}</imageName>
+                      <!-- 基础镜像-->
+                    <baseImage>jdk1.8</baseImage>
+                      <!-- 执行命令，打jar包-->
+                    <!--${project.build.finalName} 为上面finalName当前工程名称-->
+                    <entryPoint>["java", "-jar", "/${project.build.finalName}.jar"]</entryPoint>
+                    <resources>
+                        <resource>
+                            <targetPath>/</targetPath>
+                            <directory>${project.build.directory}</directory>
+                            <include>${project.build.finalName}.jar</include>
+                        </resource>
+                    </resources>
+                    <!--2375端口为搭建maven插件时配置的ExecStart的地址端口-->
+                    <dockerHost>http://192.168.217.316:2375</dockerHost>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -1,0 +1,17 @@
+server:
+  port: 12000
+spring:
+  application:
+    name: tensquare-config
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://gitee.com/traeric/TenSquareConfigRepo.git
+  rabbitmq:
+    host: 192.168.43.228
+management:   # 暴露触发消息总线的地址（固定写法，要用springcloudbus就是必须写bus-refresh）
+  endpoint:
+    web:
+      exposure:
+        include: bus-refresh
